@@ -1,0 +1,950 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Developer Student Portfolio - Complete</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(45deg, #00d4ff, #ff00ff, #00ff88);
+            --glass-bg: rgba(255,255,255,0.08);
+            --glass-border: rgba(255,255,255,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background: radial-gradient(ellipse at bottom, #1a1a2e 0%, #0c0c0c 70%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* Profile Pic Upload */
+        .profile-upload {
+            position: fixed;
+            top: 85px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background: rgba(0,212,255,0.8);
+            border: 2px solid var(--glass-border);
+            border-radius: 50%;
+            color: #000;
+            font-size: 1.1rem;
+            cursor: pointer;
+            z-index: 1002;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-upload:hover {
+            background: var(--primary-gradient);
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,212,255,0.6);
+        }
+
+        .profile-upload input { display: none; }
+
+        /* Edit Toggle */
+        .edit-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50%;
+            color: #000;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 1002;
+            box-shadow: 0 8px 25px rgba(0,212,255,0.4);
+            transition: all 0.3s ease;
+        }
+
+        .edit-toggle:hover {
+            transform: scale(1.1) rotate(180deg);
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .social-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .social-btn.github { background: rgba(0,0,0,0.8); color: #fff; }
+        .social-btn.linkedin { background: rgba(0,119,181,0.8); color: #fff; }
+        .social-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 12px 30px rgba(0,212,255,0.4);
+        }
+
+        /* Editable Elements */
+        [contenteditable="true"] {
+            outline: 2px solid #00d4ff;
+            outline-offset: 2px;
+            background: rgba(0,212,255,0.1);
+            position: relative;
+            cursor: text;
+        }
+
+        [contenteditable="true"]:focus {
+            outline: 3px solid #ff00ff;
+            background: rgba(255,0,255,0.15);
+        }
+
+        /* Profile Picture - SMALLER SIZE */
+        .profile-pic-container {
+            position: relative;
+            width: 140px; /* Reduced from 200px */
+            height: 140px; /* Reduced from 200px */
+            margin: 0 auto 20px; /* Reduced margin */
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--glass-border); /* Thinner border */
+            backdrop-filter: blur(12px);
+            transition: all 0.4s ease;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        }
+
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            transition: all 0.4s ease;
+        }
+
+        .profile-pic-container:hover .profile-pic {
+            transform: scale(1.08);
+        }
+
+        .profile-pic-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .profile-pic-container:hover::before {
+            opacity: 1;
+        }
+
+        .no-profile-pic {
+            background: var(--glass-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #bbb;
+            font-size: 0.85rem; /* Smaller text */
+            font-weight: 500;
+        }
+
+        .no-profile-pic i {
+            font-size: 2.2rem; /* Smaller icon */
+            margin-bottom: 5px;
+            opacity: 0.6;
+        }
+
+        /* Name Section */
+        .name-section {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .name-title {
+            font-size: 1.4rem;
+            color: #00d4ff;
+            font-weight: 600;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+
+        .display-name {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+        }
+
+        /* Save Bar */
+        .save-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px;
+            text-align: center;
+            transform: translateY(100%);
+            transition: all 0.4s ease;
+            z-index: 1001;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .edit-mode .save-bar {
+            transform: translateY(0);
+        }
+
+        .save-btn {
+            padding: 10px 25px;
+            background: var(--primary-gradient);
+            color: #000;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0 8px;
+            transition: all 0.3s ease;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 15px 40px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            background: rgba(0,0,0,0.1);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover { color: #00d4ff; }
+
+        /* Hero Section */
+        .hero {
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            position: relative;
+            perspective: 1200px;
+        }
+
+        .hero-content {
+            transform: translateZ(60px);
+            max-width: 550px;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 5.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .stat-item { text-align: center; }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            display: block;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* 3D Cube */
+        .scene-container {
+            width: 450px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .main-cube {
+            width: 320px;
+            height: 320px;
+            position: relative;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: all 0.5s ease;
+        }
+
+        .cube-face:hover {
+            background: linear-gradient(145deg, rgba(0,212,255,0.4), rgba(255,0,255,0.4));
+            box-shadow: 0 25px 50px rgba(0,212,255,0.6);
+        }
+
+        .front  { transform: rotateY(0deg) translateZ(160px); }
+        .back   { transform: rotateY(180deg) translateZ(160px); }
+        .right  { transform: rotateY(90deg) translateZ(160px); }
+        .left   { transform: rotateY(-90deg) translateZ(160px); }
+        .top    { transform: rotateX(90deg) translateZ(160px); }
+        .bottom { transform: rotateX(-90deg) translateZ(160px); }
+
+        /* Sections */
+        section {
+            padding: 100px 60px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 100px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Timeline */
+        .timeline {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #00d4ff, #ff00ff);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 70px;
+            opacity: 0;
+            transition: all 0.8s ease;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            width: 50%;
+            padding: 35px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            border-radius: 25px;
+            border: 1px solid var(--glass-border);
+            margin: 0 50px;
+        }
+
+        .timeline-icon {
+            width: 100px;
+            height: 100px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #000;
+            flex-shrink: 0;
+            box-shadow: 0 20px 40px rgba(0,212,255,0.4);
+        }
+
+        /* Projects */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .project-card {
+            background: var(--glass-bg);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
+            text-align: center;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,212,255,0.3);
+        }
+
+        /* Skills */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        .skill-card {
+            background: var(--glass-bg);
+            padding: 50px 30px;
+            border-radius: 25px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(25px);
+            text-align: center;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+            cursor: pointer;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 30px 60px rgba(0,212,255,0.3);
+        }
+
+        /* Contact */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .contact-info, .contact-form {
+            background: var(--glass-bg);
+            padding: 45px;
+            border-radius: 25px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(25px);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 18px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid var(--glass-border);
+            border-radius: 18px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.4s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0,212,255,0.3);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--primary-gradient);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,212,255,0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero { 
+                flex-direction: column; 
+                padding: 0 30px; 
+                gap: 30px; 
+                height: 85vh; 
+            }
+            
+            /* EVEN SMALLER MOBILE PROFILE PIC */
+            .profile-pic-container { 
+                width: 120px; /* Further reduced */
+                height: 120px; 
+            }
+            
+            .display-name { font-size: 2rem; }
+            .name-title { font-size: 1.2rem; }
+            .scene-container { 
+                width: 100%; 
+                max-width: 350px; 
+                height: 420px; 
+            }
+            .main-cube { 
+                width: 260px; 
+                height: 260px; 
+            }
+            .cube-face { 
+                width: 260px; 
+                height: 260px; 
+            }
+            .front  { transform: rotateY(0deg) translateZ(130px); }
+            .back   { transform: rotateY(180deg) translateZ(130px); }
+            .right  { transform: rotateY(90deg) translateZ(130px); }
+            .left   { transform: rotateY(-90deg) translateZ(130px); }
+            .top    { transform: rotateX(90deg) translateZ(130px); }
+            .bottom { transform: rotateX(-90deg) translateZ(130px); }
+            section { padding: 80px 30px; }
+            .contact-grid { grid-template-columns: 1fr; gap: 30px; }
+            nav { padding: 12px 25px; }
+            .logo { font-size: 1.5rem; }
+            .timeline::before { left: 40px; }
+            .timeline-item { flex-direction: column !important; }
+            .timeline-content { width: 100%; margin: 40px 0 0 0 !important; }
+        }
+
+        .fade-in-up { 
+            opacity: 0; 
+            transform: translateY(50px); 
+            transition: all 0.8s ease; 
+        }
+
+        .fade-in-up.visible { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
+
+        @media print {
+            .edit-toggle, .save-bar, .profile-upload, .scene-container { display: none !important; }
+            body { background: white; color: black; }
+            [contenteditable="true"] { outline: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Controls -->
+    <label for="profileInput" class="profile-upload" title="Upload Profile Picture">
+        <i class="fas fa-camera"></i>
+        <input type="file" id="profileInput" accept="image/*">
+    </label>
+    <button class="edit-toggle" id="editToggle"><i class="fas fa-edit"></i></button>
+    <div class="save-bar" id="saveBar">
+        <button class="save-btn" id="saveBtn">💾 Save</button>
+        <button class="save-btn" style="background: #ff6b6b; color: #fff;" id="cancelBtn">❌ Cancel</button>
+        <button class="save-btn" style="background: linear-gradient(45deg, #ff6b6b, #ff8e8e); color: #000;" onclick="window.print()">🖨️ Print</button>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo editable" id="portfolioName" contenteditable="false">Portfolio</div>
+        <div style="display: flex; gap: 25px;">
+            <a href="#home">Home</a>
+            <a href="#education">Education</a>
+            <a href="#projects">Projects</a>
+            <a href="#skills">Skills</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section id="home" class="hero">
+        <div class="hero-content fade-in-up">
+            <div class="name-section">
+                <div class="name-title editable" id="nameTitle" contenteditable="true">Full Stack Developer</div>
+                <div class="display-name editable" id="heroDisplayName" contenteditable="true">Your Full Name</div>
+            </div>
+            
+            <div class="profile-pic-container" id="profilePicContainer">
+                <div class="no-profile-pic">
+                    <i class="fas fa-user"></i>
+                    <span>Add Photo</span>
+                </div>
+            </div>
+            
+            <h1 id="heroTitle">Creative <br> Developer</h1>
+            <p class="hero-subtitle editable" id="heroSubtitle" contenteditable="true">
+                Computer Science Student passionate about 3D web experiences
+            </p>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number editable" id="projectsCount" contenteditable="true">12</span>
+                    <span>Projects</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number editable" id="experienceYears" contenteditable="true">2</span>
+                    <span>Semester Exp</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number editable" id="clientsCount" contenteditable="true">5</span>
+                    <span>Collaborations</span>
+                </div>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/yourusername" target="_blank" class="social-btn github">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/yourprofile" target="_blank" class="social-btn linkedin">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="scene-container">
+            <div class="main-cube" id="mainCube">
+                <div class="cube-face front"><i class="fab fa-react"></i><div>React</div></div>
+                <div class="cube-face back"><i class="fas fa-server"></i><div>Node.js</div></div>
+                <div class="cube-face right"><i class="fas fa-code"></i><div>HTML/CSS</div></div>
+                <div class="cube-face left"><i class="fas fa-mobile-alt"></i><div>Mobile</div></div>
+                <div class="cube-face top"><i class="fas fa-cube"></i><div>3D Web</div></div>
+                <div class="cube-face bottom"><i class="fas fa-print"></i><div>3D Print</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education -->
+    <section id="education">
+        <h2 class="section-title fade-in-up editable" contenteditable="true">Education</h2>
+        <div class="timeline">
+            <div class="timeline-item fade-in-up">
+                <div class="timeline-icon"><i class="fas fa-graduation-cap"></i></div>
+                <div class="timeline-content">
+                    <h3 contenteditable="true">B.Tech Computer Science</h3>
+                    <p class="editable" id="currentCollege" contenteditable="true">Andhra University College of Engineering</p>
+                    <span contenteditable="true">2024 - 2028</span>
+                    <p contenteditable="true">CGPA: 8.9/10 • Web Dev, 3D Graphics, Fullstack</p>
+                </div>
+            </div>
+            <div class="timeline-item fade-in-up">
+                <div class="timeline-icon"><i class="fas fa-school"></i></div>
+                <div class="timeline-content">
+                    <h3 contenteditable="true">Higher Secondary (12th)</h3>
+                    <p contenteditable="true">Sri Chaitanya Junior College</p>
+                    <span contenteditable="true">2022 - 2024</span>
+                    <p contenteditable="true">MPC - 95% aggregate</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects">
+        <h2 class="section-title fade-in-up editable" contenteditable="true">Featured Projects</h2>
+        <div class="projects-grid">
+            <div class="project-card fade-in-up">
+                <i class="fas fa-cube" style="font-size: 2.5rem; color: #00d4ff; margin-bottom: 15px; display: block;"></i>
+                <h3 contenteditable="true">3D Portfolio</h3>
+                <p contenteditable="true">Interactive 3D portfolio with rotating cube & editable content</p>
+                <div style="margin-top: 15px;">
+                    <a href="#" target="_blank" class="social-btn github" style="width: 45px; height: 45px; font-size: 1.1rem;">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="project-card fade-in-up">
+                <i class="fas fa-gamepad" style="font-size: 2.5rem; color: #ff00ff; margin-bottom: 15px; display: block;"></i>
+                <h3 contenteditable="true">WebGL Game</h3>
+                <p contenteditable="true">Three.js 3D game with physics & multiplayer</p>
+            </div>
+            <div class="project-card fade-in-up">
+                <i class="fas fa-shopping-cart" style="font-size: 2.5rem; color: #00ff88; margin-bottom: 15px; display: block;"></i>
+                <h3 contenteditable="true">E-Commerce</h3>
+                <p contenteditable="true">React + Node.js with Stripe payments</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills -->
+    <section id="skills">
+        <h2 class="section-title fade-in-up editable" contenteditable="true">Technical Skills</h2>
+        <div class="skills-grid">
+            <div class="skill-card fade-in-up">
+                <i class="fab fa-react" style="font-size: 3.5rem; margin-bottom: 20px; display: block;"></i>
+                <h3 contenteditable="true">Frontend</h3>
+                <p contenteditable="true">HTML, CSS, JS, React, Three.js</p>
+            </div>
+            <div class="skill-card fade-in-up">
+                <i class="fas fa-server" style="font-size: 3.5rem; margin-bottom: 20px; display: block;"></i>
+                <h3 contenteditable="true">Backend</h3>
+                <p contenteditable="true">Node.js, Express, MongoDB</p>
+            </div>
+            <div class="skill-card fade-in-up">
+                <i class="fas fa-mobile-alt" style="font-size: 3.5rem; margin-bottom: 20px; display: block;"></i>
+                <h3 contenteditable="true">Mobile</h3>
+                <p contenteditable="true">Responsive, React Native, PWA</p>
+            </div>
+            <div class="skill-card fade-in-up">
+                <i class="fas fa-tools" style="font-size: 3.5rem; margin-bottom: 20px; display: block;"></i>
+                <h3 contenteditable="true">Tools</h3>
+                <p contenteditable="true">Git, VS Code, Figma, Vercel</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+        <h2 class="section-title fade-in-up editable" contenteditable="true">Get In Touch</h2>
+        <div class="contact-grid">
+            <div class="contact-info fade-in-up">
+                <h3 contenteditable="true">Contact Details</h3>
+                <p class="editable" id="contactEmail" contenteditable="true"><i class="fas fa-envelope"></i> your.email@student.com</p>
+                <p contenteditable="true"><i class="fas fa-phone"></i> +91 98765 43210</p>
+                <p contenteditable="true"><i class="fas fa-map-marker-alt"></i> Rasapūdipalem, AP, India</p>
+                <p class="editable" id="aboutText" contenteditable="true">CS student passionate about 3D web & interactive experiences</p>
+                <div class="social-links">
+                    <a href="https://github.com/yourusername" target="_blank" class="social-btn github">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                    <a href="https://linkedin.com/in/yourprofile" target="_blank" class="social-btn linkedin">
+                        <i class="fab fa-linkedin"></i> LinkedIn
+                    </a>
+                </div>
+            </div>
+            <form class="contact-form fade-in-up">
+                <div class="form-group">
+                    <input type="text" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" placeholder="Your Email" required>
+                </div>
+                <div class="form-group">
+                    <textarea rows="5" placeholder="Your message..." required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Send Message 🚀</button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        // Profile Picture Upload
+        const profileInput = document.getElementById('profileInput');
+        const profilePicContainer = document.getElementById('profilePicContainer');
+
+        profileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'profile-pic';
+                    profilePicContainer.innerHTML = '';
+                    profilePicContainer.appendChild(img);
+                    localStorage.setItem('profilePic', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Load saved profile picture
+        const savedProfilePic = localStorage.getItem('profilePic');
+        if (savedProfilePic) {
+            const img = document.createElement('img');
+            img.src = savedProfilePic;
+            img.className = 'profile-pic';
+            profilePicContainer.innerHTML = '';
+            profilePicContainer.appendChild(img);
+        }
+
+        // Edit Mode Toggle
+        const editToggle = document.getElementById('editToggle');
+        const saveBar = document.getElementById('saveBar');
+        const body = document.body;
+        let originalContent = {};
+
+        editToggle.addEventListener('click', () => {
+            const isEditMode = body.classList.toggle('edit-mode');
+            const editables = document.querySelectorAll('[contenteditable="true"]');
+            
+            if (isEditMode) {
+                editables.forEach(el => {
+                    originalContent[el.id] = el.textContent;
+                    el.contentEditable = true;
+                });
+                editToggle.innerHTML = '<i class="fas fa-save"></i>';
+                saveBar.style.transform = 'translateY(0)';
+            } else {
+                editables.forEach(el => el.contentEditable = false);
+                editToggle.innerHTML = '<i class="fas fa-edit"></i>';
+                saveContent();
+                saveBar.style.transform = 'translateY(100%)';
+            }
+        });
+
+        // Save Content
+        document.getElementById('saveBtn').addEventListener('click', saveContent);
+        document.getElementById('cancelBtn').addEventListener('click', cancelEdit);
+
+        function saveContent() {
+            const data = {};
+            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                data[el.id] = el.textContent;
+            });
+            localStorage.setItem('portfolioContent', JSON.stringify(data));
+            body.classList.remove('edit-mode');
+            document.querySelectorAll('[contenteditable="true"]').forEach(el => el.contentEditable = false);
+            editToggle.innerHTML = '<i class="fas fa-edit"></i>';
+            saveBar.style.transform = 'translateY(100%)';
+            alert('✅ Portfolio saved successfully! 🎉');
+        }
+
+        function cancelEdit() {
+            Object.entries(originalContent).forEach(([key, value]) => {
+                const el = document.getElementById(key);
+                if (el) el.textContent = value;
+            });
+            body.classList.remove('edit-mode');
+            document.querySelectorAll('[contenteditable="true"]').forEach(el => el.contentEditable = false);
+            editToggle.innerHTML = '<i class="fas fa-edit"></i>';
+            saveBar.style.transform = 'translateY(100%)';
+        }
+
+        // Load saved content
+        function loadContent() {
+            const saved = JSON.parse(localStorage.getItem('portfolioContent')) || {};
+            Object.entries(saved).forEach(([key, value]) => {
+                const el = document.getElementById(key);
+                if (el) el.textContent = value;
+            });
+        }
+
+        // 3D Cube Animation
+        const cube = document.getElementById('mainCube');
+        let rotX = 0, rotY = 0, targetX = 0, targetY = 0;
+
+        cube.addEventListener('mousemove', (e) => {
+            const rect = cube.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width;
+            const y = (e.clientY - rect.top) / rect.height;
+            targetX = (y - 0.5) * -25;
+            targetY = (x - 0.5) * 25;
+        });
+
+        function animateCube() {
+            rotX += (targetX - rotX) * 0.1;
+            rotY += (targetY - rotY) * 0.1;
+            cube.style.transform = `rotateX(${rotX.toFixed(1)}deg) rotateY(${rotY.toFixed(1)}deg)`;
+            requestAnimationFrame(animateCube);
+        }
+        animateCube();
+
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Scroll Animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+
+        // Form Submission
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('📧 Message sent successfully! I\'ll get back to you soon. 🚀');
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            loadContent();
+        });
+    </script>
+</body>
+</html>
